@@ -7,6 +7,10 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    role: str
+
+class UserLogin(UserBase):
+    password: str
 
 class UserInDB(UserBase):
     id: uuid.UUID
