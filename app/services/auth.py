@@ -13,15 +13,14 @@ def get_user_by_email(db: Session, email: str):
     """
     return db.query(User).filter(User.email == email).first()
 
-def create_user(db: Session, email: str, password: str):
+def create_user(db: Session, email: str, password: str, role: str):
     """
     Function to create a user, and store the details in the database.
     """
 
     #hash the user's password
     hashed_password = pwd_context.hash(password)
-
-    db_user = User(email=email, hashed_password=hashed_password)
+    db_user = User(email=email, hashed_password=hashed_password, role=role)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -43,7 +42,7 @@ def login_user(db: Session, email: str, password: str):
     user = authenticate_user(db, email, password)
     if user:
         access_token = create_access_token(
-            data={"email": user.email,"id":str(user.id)}
+            data={"email": user.email,"id":str(user.id),"role":user.role}
         )
         return {"access_token": access_token, "token_type": "bearer"}
     return None

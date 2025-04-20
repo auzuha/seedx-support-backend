@@ -7,7 +7,7 @@ from app.services.auth import login_user, create_user
 from app.services.ticket import create_ticket, get_tickets, get_ticket_by_id, add_message, get_ticket_messages
 from app.services.ai_service import get_ai_response
 from app.utils.jwt_util import verify_token
-from app.schemas import UserCreate, TicketCreate, Ticket, MessageCreate, Message
+from app.schemas import UserCreate, TicketCreate, Ticket, MessageCreate, Message, UserLogin
 from app.database import Base, engine
 
 #init app
@@ -33,11 +33,11 @@ def get_current_user(token: str):
 
 @app.post("/auth/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = create_user(db, user.email, user.password)
-    return {"id": db_user.id, "email": db_user.email}
+    db_user = create_user(db, user.email, user.password, user.role)
+    return {"id": db_user.id, "email": db_user.email, "role": db_user.role}
 
 @app.post("/auth/login")
-def login(user: UserCreate, db: Session = Depends(get_db)):
+def login(user: UserLogin, db: Session = Depends(get_db)):
     token = login_user(db, user.email, user.password)
     if token:
         return token
